@@ -13,6 +13,7 @@ build:
   script:
     - npm install --legacy-peer-deps
     - npm run build
+    - ls -la dist/translation-app/
   artifacts:
     paths:
       - dist/translation-app/
@@ -30,6 +31,7 @@ deploy:
     - netlify --version
     - netlify status
     - echo "Deploying to site id:${NETLIFY_SITE_ID}"
+    - ls -la dist/translation-app/
     - netlify deploy --prod --dir dist/translation-app
     - echo "Waiting for deployment to be available..."
     - sleep 30

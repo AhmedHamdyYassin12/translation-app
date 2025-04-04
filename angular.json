@@ -73,7 +73,8 @@
               "outputHashing": "all",
               "sourceMap": false,
               "optimization": true,
-              "extractLicenses": true
+              "extractLicenses": true,
+              "baseHref": "/"
             },
             "development": {
               "optimization": false,
