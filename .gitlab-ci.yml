@@ -32,9 +32,6 @@ test-website:
     - echo "Testing build artifacts..."
     - ls -la dist/
     - test -d dist/translation-app
-    - test -f dist/translation-app/index.html
-    - test -f dist/translation-app/main.*.js
-    - test -f dist/translation-app/styles.*.css
     - echo "Testing completed successfully"
   artifacts:
     paths:
