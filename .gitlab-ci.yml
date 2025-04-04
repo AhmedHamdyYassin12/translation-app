@@ -10,32 +10,35 @@ build-website:
   image: node:22-alpine
   stage: build
   script:
-    - echo "check node and npm versions"
-    - ls -la
-    - node --version
-    - npm --version
+    - echo "Installing dependencies..."
     - npm install --legacy-peer-deps
-    - ls -la
+    - echo "Building application..."
     - npm run build
-    - echo "Build completed, checking output:"
+    - echo "Verifying build output..."
     - ls -la dist/translation-app/
   artifacts:
     paths:
       - dist/translation-app/
     expire_in: 1 week
+    when: on_success
+    reports:
+      dotenv: build.env
 
 test-website:
-  image: alpine
+  image: node:22-alpine
   stage: test
-  needs:
-    - build-website
-  dependencies:
-    - build-website
+  needs: ["build-website"]
   script:
-    - echo "Start Testing"
+    - echo "Testing build artifacts..."
     - ls -la dist/translation-app/
     - test -f dist/translation-app/index.html
+    - test -f dist/translation-app/main.js
     - echo "Testing completed successfully"
+  artifacts:
+    paths:
+      - dist/translation-app/
+    expire_in: 1 week
+    when: on_success
 
 netlify-deploy-prod:
   image: node:22-alpine
