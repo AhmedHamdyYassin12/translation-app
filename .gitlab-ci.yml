@@ -36,4 +36,5 @@ deploy:
     - echo "Deploying to Netlify..."
     - netlify deploy --prod --dir dist/translation-app/browser --auth $NETLIFY_AUTH_TOKEN --site $NETLIFY_SITE_ID
     - echo "Setting environment variables..."
-    - netlify env:set DEEPL_API_KEY $DEEPL_API_KEY --auth $NETLIFY_AUTH_TOKEN --site $NETLIFY_SITE_ID
+    - netlify link --auth $NETLIFY_AUTH_TOKEN
+    - netlify env:set DEEPL_API_KEY $DEEPL_API_KEY
