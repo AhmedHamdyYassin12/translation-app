@@ -73,9 +73,7 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all",
-              "baseHref": "/translation-app/",
-              "deployUrl": "/translation-app/"
+              "outputHashing": "all"
             },
             "development": {
               "optimization": false,
