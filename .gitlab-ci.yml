@@ -41,6 +41,7 @@ netlify-deploy-prod:
   image: node:22-alpine
   stage: deploy
   needs:
+    - build-website
     - test-website
   dependencies:
     - build-website
