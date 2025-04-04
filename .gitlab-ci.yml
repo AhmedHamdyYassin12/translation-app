@@ -1,4 +1,4 @@
-image: node:18
+image: node:22-alpine
 
 cache:
   paths:
@@ -6,7 +6,8 @@ cache:
 
 stages:
   - build
-  - deploy
+  - deploy_staging
+  - deploy-prod
 
 build:
   stage: build
@@ -18,14 +19,33 @@ build:
       - dist/translation-app/
     expire_in: 1 week
 
-deploy:
-  stage: deploy
-  image: node:18
+netlify-deploy-staging:
+  image: node:22-alpine
+  stage: deploy_staging
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  before_script:
+    - npm install netlify-cli -g
+    - apk add curl
   script:
-    - npm install -g netlify-cli
-    - netlify deploy --dir=dist/translation-app --prod
-  only:
-    - main
-  environment:
-    name: production
-    url: https://translation-app.netlify.app 
+    - netlify --version
+    - netlify status
+    - echo "Deploying to site id:${NETLIFY_SITE_ID}"
+    - netlify deploy --alias staging --dir dist/translation-app
+    - curl 'https://translation-app.netlify.app/' | grep 'app-root'
+
+netlify-deploy-prod:
+  image: node:22-alpine
+  stage: deploy-prod
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  when: manual
+  before_script:
+    - npm install netlify-cli -g
+    - apk add curl
+  script:
+    - netlify --version
+    - netlify status
+    - echo "Deploying to site id:${NETLIFY_SITE_ID}"
+    - netlify deploy --prod --dir dist/translation-app
+    - curl 'https://translation-app.netlify.app/' | grep 'app-root' 
