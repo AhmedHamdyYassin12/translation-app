@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build --base-href /translation-app/",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "ng deploy --base-href=/translation-app/"
   },
   "private": true,
   "dependencies": {
