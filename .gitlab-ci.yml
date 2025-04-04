@@ -15,10 +15,10 @@ build-website:
     - echo "Building application..."
     - npm run build
     - echo "Verifying build output..."
-    - ls -la dist/translation-app/
+    - ls -la dist/
   artifacts:
     paths:
-      - dist/translation-app/
+      - dist/
     expire_in: 1 week
     when: on_success
     reports:
@@ -30,13 +30,15 @@ test-website:
   needs: ["build-website"]
   script:
     - echo "Testing build artifacts..."
-    - ls -la dist/translation-app/
+    - ls -la dist/
+    - test -d dist/translation-app
     - test -f dist/translation-app/index.html
-    - test -f dist/translation-app/main.js
+    - test -f dist/translation-app/main.*.js
+    - test -f dist/translation-app/styles.*.css
     - echo "Testing completed successfully"
   artifacts:
     paths:
-      - dist/translation-app/
+      - dist/
     expire_in: 1 week
     when: on_success
 
