@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 interface TranslationResponse {
-  responseData: {
-    translatedText: string;
-  };
+  translations: Array<{
+    text: string;
+    detected_source_language: string;
+  }>;
 }
 
 interface Language {
@@ -18,33 +19,72 @@ interface Language {
   providedIn: 'root'
 })
 export class TranslationService {
-  private apiUrl = 'https://api.mymemory.translated.net/get';
+  private apiUrl = '/translate';  // Using proxy endpoint
 
   constructor(private http: HttpClient) { }
 
   translate(text: string, targetLang: string, sourceLang: string): Observable<TranslationResponse> {
-    const params = {
-      q: text,
-      langpair: `${sourceLang}|${targetLang}`
+    const body = {
+      text: [text],
+      target_lang: targetLang.toUpperCase(),
+      source_lang: sourceLang.toUpperCase()
     };
 
-    return this.http.get<TranslationResponse>(this.apiUrl, { params });
+    console.log('Making translation request to:', this.apiUrl);
+    console.log('Request body:', body);
+
+    return this.http.post<TranslationResponse>(this.apiUrl, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).pipe(
+      map(response => {
+        console.log('Translation response:', response);
+        if (!response || !response.translations || !response.translations[0] || !response.translations[0].text) {
+          throw new Error('Invalid translation response');
+        }
+        return response;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Translation error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          error: error.error,
+          headers: error.headers,
+          url: error.url
+        });
+        
+        if (error.status === 0) {
+          return throwError(() => new Error('Network error. Please check your connection and CORS settings.'));
+        }
+        if (error.status === 401) {
+          return throwError(() => new Error('Invalid API key. Please check your credentials.'));
+        }
+        if (error.status === 429) {
+          return throwError(() => new Error('Translation quota exceeded. Please try again later.'));
+        }
+        if (error.status === 403) {
+          return throwError(() => new Error('Access forbidden. Please check your API key and permissions.'));
+        }
+        return throwError(() => new Error(`Translation failed: ${error.message || 'Unknown error'}`));
+      })
+    );
   }
 
   getSupportedLanguages(): Observable<Language[]> {
-    // MyMemory doesn't have a languages endpoint, so we'll return a static list
     return new Observable<Language[]>(subscriber => {
       subscriber.next([
-        { code: 'de', name: 'German' },
-        { code: 'en', name: 'English' },
-        { code: 'fr', name: 'French' },
-        { code: 'es', name: 'Spanish' },
-        { code: 'it', name: 'Italian' },
-        { code: 'pt', name: 'Portuguese' },
-        { code: 'ru', name: 'Russian' },
-        { code: 'ja', name: 'Japanese' },
-        { code: 'zh', name: 'Chinese' },
-        { code: 'ar', name: 'Arabic' }
+        { code: 'DE', name: 'German' },
+        { code: 'EN', name: 'English' },
+        { code: 'FR', name: 'French' },
+        { code: 'ES', name: 'Spanish' },
+        { code: 'IT', name: 'Italian' },
+        { code: 'PT', name: 'Portuguese' },
+        { code: 'RU', name: 'Russian' },
+        { code: 'JA', name: 'Japanese' },
+        { code: 'ZH', name: 'Chinese' },
+        { code: 'AR', name: 'Arabic' }
       ]);
       subscriber.complete();
     });

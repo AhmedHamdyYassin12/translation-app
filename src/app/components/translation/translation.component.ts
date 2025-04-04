@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TranslationService } from '../../services/translation.service';
 import { StorageService, SavedTranslation } from '../../services/storage.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -8,7 +9,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 @Component({
   selector: 'app-translation',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatSnackBarModule],
   templateUrl: './translation.component.html',
   styleUrl: './translation.component.scss'
 })
@@ -24,7 +25,8 @@ export class TranslationComponent implements OnInit {
 
   constructor(
     private translationService: TranslationService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private snackBar: MatSnackBar
   ) {
     this.translateSubject.pipe(
       debounceTime(500),
@@ -54,6 +56,7 @@ export class TranslationComponent implements OnInit {
       error: (error) => {
         console.error('Error loading languages:', error);
         this.error = 'Failed to load supported languages. Please try again later.';
+        this.showError(this.error);
         this.isLoading = false;
       }
     });
@@ -74,16 +77,19 @@ export class TranslationComponent implements OnInit {
       this.sourceLanguage
     ).subscribe({
       next: (response) => {
-        if (response && response.responseData && response.responseData.translatedText) {
-          this.translatedText = response.responseData.translatedText;
+        if (response && response.translations && response.translations[0] && response.translations[0].text) {
+          this.translatedText = response.translations[0].text;
         } else {
           this.error = 'Invalid translation response';
+          this.showError('Invalid translation response');
         }
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Translation error:', error);
-        this.error = 'Translation failed. Please try again later.';
+        const errorMessage = error.message || 'Translation failed. Please try again later.';
+        this.error = errorMessage;
+        this.showError(errorMessage);
         this.translatedText = '';
         this.isLoading = false;
       }
@@ -91,16 +97,36 @@ export class TranslationComponent implements OnInit {
   }
 
   saveTranslation() {
-    if (!this.sourceText.trim() || !this.translatedText.trim()) return;
+    if (this.sourceText && this.translatedText) {
+      const translation: SavedTranslation = {
+        sourceText: this.sourceText,
+        translatedText: this.translatedText,
+        sourceLanguage: this.sourceLanguage,
+        targetLanguage: this.targetLanguage,
+        timestamp: Date.now()
+      };
+      this.storageService.saveTranslation(translation);
+      this.showSuccess('Translation saved successfully!');
+    } else {
+      this.showError('No translation to save');
+    }
+  }
 
-    const translation: SavedTranslation = {
-      sourceText: this.sourceText,
-      translatedText: this.translatedText,
-      sourceLanguage: this.sourceLanguage,
-      targetLanguage: this.targetLanguage,
-      timestamp: Date.now()
-    };
+  private showSuccess(message: string) {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['success-snackbar']
+    });
+  }
 
-    this.storageService.saveTranslation(translation);
+  private showError(message: string) {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['error-snackbar']
+    });
   }
 }

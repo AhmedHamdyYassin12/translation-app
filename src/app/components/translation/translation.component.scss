@@ -1,29 +1,48 @@
 .translation-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   color: #333;
+  font-size: 1.5rem;
+  @media (min-width: 768px) {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
 }
 
 .error-message {
   background-color: #ffebeb;
   color: #d32f2f;
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: 4px;
   margin-bottom: 1rem;
   text-align: center;
+  font-size: 0.9rem;
+  @media (min-width: 768px) {
+    padding: 1rem;
+    font-size: 1rem;
+  }
 }
 
 .language-selectors {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
 }
 
 .language-selector {
@@ -34,14 +53,25 @@ h1 {
   label {
     font-weight: 500;
     color: #333;
+    font-size: 0.9rem;
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
   }
 
   select {
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
-    min-width: 200px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     background-color: white;
+    font-size: 0.9rem;
+    @media (min-width: 768px) {
+      min-width: 200px;
+      font-size: 1rem;
+    }
 
     &:disabled {
       background-color: #f5f5f5;
@@ -122,5 +152,32 @@ h1 {
   &:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+  }
+}
+
+::ng-deep {
+  .success-snackbar {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .error-snackbar {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .mat-snack-bar-container {
+    margin: 0 !important;
+    min-width: 0 !important;
+    padding: 14px 24px !important;
+    border-radius: 4px;
+  }
+
+  .mat-simple-snackbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 20px;
+    opacity: 1;
   }
 }
