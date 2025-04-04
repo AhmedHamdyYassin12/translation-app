@@ -32,7 +32,9 @@ netlify-deploy-staging:
     - netlify status
     - echo "Deploying to site id:${NETLIFY_SITE_ID}"
     - netlify deploy --alias staging --dir dist/translation-app
-    - curl 'https://translation-app.netlify.app/' | grep 'app-root'
+    - echo "Waiting for deployment to be available..."
+    - sleep 30
+    - curl -s "https://staging--translation-app-test.netlify.app/" | grep -q "app-root" || (echo "Smoke test failed" && exit 1)
 
 netlify-deploy-prod:
   image: node:22-alpine
@@ -48,4 +50,6 @@ netlify-deploy-prod:
     - netlify status
     - echo "Deploying to site id:${NETLIFY_SITE_ID}"
     - netlify deploy --prod --dir dist/translation-app
-    - curl 'https://translation-app.netlify.app/' | grep 'app-root' 
+    - echo "Waiting for deployment to be available..."
+    - sleep 30
+    - curl -s "https://translation-app-test.netlify.app/" | grep -q "app-root" || (echo "Smoke test failed" && exit 1) 
