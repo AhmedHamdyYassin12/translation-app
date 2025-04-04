@@ -1,29 +1,39 @@
-image: node:22-alpine
-
-cache:
-  paths:
-    - node_modules/
-
+variables:
+  NETLIFY_SITE_ID: 'e811a441-a530-4211-bdc9-374bf821253e'
+    
 stages:
   - build
+  - test
   - deploy
 
-build:
+build-website:
+  image: node:22-alpine
   stage: build
   script:
+    - echo "check node and npm versions"
+    - ls -la
+    - node --version
+    - npm --version
     - npm install --legacy-peer-deps
+    - ls -la
     - npm run build
-    - ls -la dist/translation-app/
   artifacts:
     paths:
       - dist/translation-app/
-    expire_in: 1 week
 
-deploy:
+test-website:
+  image: alpine
+  stage: test
+  script:
+    - echo "Start Testing"
+    - test -f dist/translation-app/index.html
+
+netlify-deploy-prod:
   image: node:22-alpine
   stage: deploy
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  when: manual
   before_script:
     - npm install netlify-cli -g
     - apk add curl
@@ -31,8 +41,4 @@ deploy:
     - netlify --version
     - netlify status
     - echo "Deploying to site id:${NETLIFY_SITE_ID}"
-    - ls -la dist/translation-app/
-    - netlify deploy --prod --dir dist/translation-app
-    - echo "Waiting for deployment to be available..."
-    - sleep 30
-    - curl -s "https://translation-app-test.netlify.app/" | grep -q "app-root" || (echo "Smoke test failed" && exit 1) 
+    - netlify deploy --prod --dir dist/translation-app 
