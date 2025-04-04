@@ -1,38 +1,44 @@
-image: node:22-alpine
-
-cache:
-  paths:
-    - node_modules/
-
-stages:
+variables: # variable that will be avialbe for the entire pipleine and mainly needed in both deploy env.
+  NETLIFY_SITE_ID: 'e811a441-a530-4211-bdc9-374bf821253e' 
+    
+stages: #keep in your mind that Gitlab defines a  default stages such as build, test, and deploy so if you didn't idenitfy them they are already there.
   - build
+  - test
   - deploy
 
-build:
+build-website:
+  image: node:22-alpine
   stage: build
   script:
-    - npm install --legacy-peer-deps
+    - echo "check node and npm versions"
+    - ls -la
+    - node --version
+    - npm --version
+    - npm ci
+    - ls -la
     - npm run build
-    - ls -la dist/translation-app/
   artifacts:
     paths:
-      - dist/translation-app/
-    expire_in: 1 week
+      - build/
 
-deploy:
+test-website:
+  image: alpine
+  stage: test
+  script:
+    - echo "Start Testing"
+    - test -f build/index.html
+
+netlify-deploy-prod:
   image: node:22-alpine
   stage: deploy
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-  before_script:
+  when: manual
+  before_script: # use the before script to install the tools that you are going to use in the script of the specified job. 
     - npm install netlify-cli -g
     - apk add curl
   script:
     - netlify --version
     - netlify status
     - echo "Deploying to site id:${NETLIFY_SITE_ID}"
-    - ls -la dist/translation-app/
-    - netlify deploy --prod --dir dist/translation-app
-    - echo "Waiting for deployment to be available..."
-    - sleep 30
-    - curl -s "https://translation-app-test.netlify.app/" | grep -q "app-root" || (echo "Smoke test failed" && exit 1) 
+    - netlify deploy --prod --dir build #this to mention get the build version of our website from the build dir in the artifacts and this is prod env.
