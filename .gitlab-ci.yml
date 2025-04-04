@@ -6,8 +6,7 @@ cache:
 
 stages:
   - build
-  - deploy_staging
-  - deploy-prod
+  - deploy
 
 build:
   stage: build
@@ -19,29 +18,11 @@ build:
       - dist/translation-app/
     expire_in: 1 week
 
-netlify-deploy-staging:
+deploy:
   image: node:22-alpine
-  stage: deploy_staging
+  stage: deploy
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-  before_script:
-    - npm install netlify-cli -g
-    - apk add curl
-  script:
-    - netlify --version
-    - netlify status
-    - echo "Deploying to site id:${NETLIFY_SITE_ID}"
-    - netlify deploy --alias staging --dir dist/translation-app
-    - echo "Waiting for deployment to be available..."
-    - sleep 30
-    - curl -s "https://staging--translation-app-test.netlify.app/" | grep -q "app-root" || (echo "Smoke test failed" && exit 1)
-
-netlify-deploy-prod:
-  image: node:22-alpine
-  stage: deploy-prod
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-  when: manual
   before_script:
     - npm install netlify-cli -g
     - apk add curl
