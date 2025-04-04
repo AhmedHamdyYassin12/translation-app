@@ -1,4 +1,12 @@
-export const environment = {
-  production: false,
-  deeplApiKey: 'd64157e0-a9be-4600-9fe4-9d720453cc26:fx'
-}; 
+// Try to import the local environment, fallback to default if not available
+let localEnvironment;
+try {
+  localEnvironment = require('./environment.local').environment;
+} catch (e) {
+  localEnvironment = {
+    production: false,
+    deeplApiKey: 'YOUR_DEEPL_API_KEY_HERE' // Replace this with your actual API key for local development
+  };
+}
+
+export const environment = localEnvironment; 

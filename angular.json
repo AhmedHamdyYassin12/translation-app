@@ -48,30 +48,39 @@
               "sourceMap": false,
               "optimization": true,
               "extractLicenses": true,
-              "baseHref": "/"
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
-            "development": {
-              "optimization": false,
-              "sourceMap": true,
-              "extractLicenses": false
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "translation-app:build",
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "translation-app:build:production"
             },
-            "development": {
-              "buildTarget": "translation-app:build:development"
+            "local": {
+              "buildTarget": "translation-app:build:local"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "proxyConfig": "proxy.conf.json"
-          }
+          "defaultConfiguration": "local"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

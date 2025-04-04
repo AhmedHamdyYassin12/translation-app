@@ -20,7 +20,7 @@ interface Language {
   providedIn: 'root'
 })
 export class TranslationService {
-  private apiUrl = 'https://api-free.deepl.com/v2/translate';
+  private apiUrl = '/api/v2/translate';
 
   constructor(private http: HttpClient) { }
 

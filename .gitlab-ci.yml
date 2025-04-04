@@ -1,30 +1,37 @@
-variables:
-  NETLIFY_SITE_ID: 'e811a441-a530-4211-bdc9-374bf821253e'
-  NETLIFY_AUTH_TOKEN: 'nfp_LmtT1TGyEqDh2AWKv9eDTRL26Jcu3wbpa4f7'
-    
+image: node:20
+
+cache:
+  paths:
+    - node_modules/
+
 stages:
   - build
   - deploy
 
+variables:
+  DEEPL_API_KEY: $DEEPL_API_KEY  # This will be set in GitLab CI/CD variables
+  NETLIFY_SITE_ID: $NETLIFY_SITE_ID  # This will be set in GitLab CI/CD variables
+  NETLIFY_AUTH_TOKEN: $NETLIFY_AUTH_TOKEN  # This will be set in GitLab CI/CD variables
+
 build:
-  image: node:22-alpine
   stage: build
   script:
-    - echo "Installing dependencies..."
-    - npm install --legacy-peer-deps
-    - echo "Building application..."
-    - npm run build
-    - echo "Verifying build output..."
-    - ls -la dist/
-    - test -d dist/translation-app
-    - test -f dist/translation-app/browser/index.html
-    - test -f dist/translation-app/browser/main*.js
-    - test -f dist/translation-app/browser/styles*.css
+    - npm install
+    - npm run build:prod
   artifacts:
     paths:
-      - dist/
+      - dist/translation-app/
     expire_in: 1 week
-    when: on_success
+
+pages:
+  stage: deploy
+  script:
+    - cp -r dist/translation-app/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main  # or your default branch name
 
 deploy:
   image: node:22-alpine

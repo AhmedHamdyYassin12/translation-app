@@ -1,59 +1,28 @@
-# TranslationApp
+# Translation App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
+A simple translation application using the DeepL API.
 
-## Development server
+## Setup
 
-To start a local development server, run:
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Get your DeepL API key from [DeepL's website](https://www.deepl.com/pro-api)
+4. Configure your API key:
+   - Open `src/environments/environment.ts` for development
+   - Open `src/environments/environment.prod.ts` for production
+   - Replace `'YOUR_DEEPL_API_KEY_HERE'` with your actual API key
 
-```bash
-ng serve
-```
+## Development
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
 
-## Code scaffolding
+## Production
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-```bash
-ng generate component component-name
-```
+## Security Note
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Never commit your actual API key to the repository. The environment files are already set up with placeholders to prevent accidental exposure of your API key.

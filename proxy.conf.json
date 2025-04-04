@@ -1,13 +1,10 @@
 {
-  "/translate": {
+  "/api": {
     "target": "https://api-free.deepl.com",
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": {
-      "^/translate": "/v2/translate"
-    },
-    "headers": {
-      "Authorization": "DeepL-Auth-Key d64157e0-a9be-4600-9fe4-9d720453cc26:fx"
+      "^/api": ""
     }
   }
 } 
