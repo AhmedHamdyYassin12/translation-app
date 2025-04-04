@@ -1,14 +1,16 @@
 [build]
-  command = "npm run build"
-  publish = "dist/translation-app"
+  command = "npm run build:prod"
+  publish = "dist/translation-app/browser"
+  functions = "netlify/functions"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
+  force = true
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
   NPM_VERSION = "9"
 
 [[headers]]

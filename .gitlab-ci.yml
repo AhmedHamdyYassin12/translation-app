@@ -21,26 +21,19 @@ build:
   artifacts:
     paths:
       - dist/translation-app/
+      - netlify/
     expire_in: 1 week
 
-pages:
-  stage: deploy
-  script:
-    - cp -r dist/translation-app/* public/
-  artifacts:
-    paths:
-      - public
-  only:
-    - main  # or your default branch name
-
 deploy:
-  image: node:22-alpine
+  image: node:20
   stage: deploy
   needs: ["build"]
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   before_script:
-    - npm install netlify-cli -g
+    - npm install -g netlify-cli
   script:
     - echo "Deploying to Netlify..."
     - netlify deploy --prod --dir dist/translation-app/browser --auth $NETLIFY_AUTH_TOKEN --site $NETLIFY_SITE_ID
+    - echo "Setting environment variables..."
+    - netlify env:set DEEPL_API_KEY $DEEPL_API_KEY --auth $NETLIFY_AUTH_TOKEN --site $NETLIFY_SITE_ID
