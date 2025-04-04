@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  translationApiKey: 'YOUR_GOOGLE_TRANSLATE_API_KEY'
+  deeplApiKey: 'd64157e0-a9be-4600-9fe4-9d720453cc26:fx'
 }; 

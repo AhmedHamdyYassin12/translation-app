@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 interface TranslationResponse {
   translations: Array<{
@@ -19,7 +20,7 @@ interface Language {
   providedIn: 'root'
 })
 export class TranslationService {
-  private apiUrl = '/translate';  // Using proxy endpoint
+  private apiUrl = 'https://api-free.deepl.com/v2/translate';
 
   constructor(private http: HttpClient) { }
 
@@ -36,7 +37,8 @@ export class TranslationService {
     return this.http.post<TranslationResponse>(this.apiUrl, body, {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': `DeepL-Auth-Key ${environment.deeplApiKey}`
       }
     }).pipe(
       map(response => {
