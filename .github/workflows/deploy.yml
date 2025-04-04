@@ -20,9 +20,15 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: ng build --configuration production --base-href "/translation-app/"
+        run: |
+          ng build --configuration production --base-href "/translation-app/"
+          ls -la dist/translation-app/
+
+      - name: Create .nojekyll file
+        run: touch dist/translation-app/.nojekyll
 
       - name: Deploy
         uses: actions/deploy-pages@v4
         with:
-          folder: dist/translation-app 
+          folder: dist/translation-app
+          token: ${{ secrets.GITHUB_TOKEN }} 
