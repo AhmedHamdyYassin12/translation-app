@@ -1,12 +1,12 @@
 variables:
   NETLIFY_SITE_ID: 'e811a441-a530-4211-bdc9-374bf821253e'
+  NETLIFY_AUTH_TOKEN: 'nfp_LmtT1TGyEqDh2AWKv9eDTRL26Jcu3wbpa4f7'
     
 stages:
   - build
-  - test
   - deploy
 
-build-website:
+build:
   image: node:22-alpine
   stage: build
   script:
@@ -16,49 +16,24 @@ build-website:
     - npm run build
     - echo "Verifying build output..."
     - ls -la dist/
-  artifacts:
-    paths:
-      - dist/
-    expire_in: 1 week
-    when: on_success
-    reports:
-      dotenv: build.env
-
-test-website:
-  image: node:22-alpine
-  stage: test
-  needs: ["build-website"]
-  script:
-    - echo "Testing build artifacts..."
-    - ls -la dist/
     - test -d dist/translation-app
-    - test -f dist/translation-app/index.html
-    - test -f dist/translation-app/main.*.js
-    - test -f dist/translation-app/styles.*.css
-    - echo "Testing completed successfully"
+    - test -f dist/translation-app/browser/index.html
+    - test -f dist/translation-app/browser/main*.js
+    - test -f dist/translation-app/browser/styles*.css
   artifacts:
     paths:
       - dist/
     expire_in: 1 week
     when: on_success
 
-netlify-deploy-prod:
+deploy:
   image: node:22-alpine
   stage: deploy
-  needs:
-    - build-website
-    - test-website
-  dependencies:
-    - build-website
+  needs: ["build"]
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-  when: manual
   before_script:
     - npm install netlify-cli -g
-    - apk add curl
   script:
-    - netlify --version
-    - netlify status
-    - echo "Deploying to site id:${NETLIFY_SITE_ID}"
-    - ls -la dist/translation-app/
-    - netlify deploy --prod --dir dist/translation-app
+    - echo "Deploying to Netlify..."
+    - netlify deploy --prod --dir dist/translation-app --auth $NETLIFY_AUTH_TOKEN --site $NETLIFY_SITE_ID
