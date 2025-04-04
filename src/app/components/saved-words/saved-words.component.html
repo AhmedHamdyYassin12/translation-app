@@ -1,0 +1,32 @@
+<div class="saved-translations-container">
+  <div class="header">
+    <h2>Saved Translations</h2>
+    <button class="clear-all" (click)="clearAll()" *ngIf="savedTranslations.length > 0">
+      Clear All
+    </button>
+  </div>
+
+  <div class="translations-list" *ngIf="savedTranslations.length > 0; else noTranslations">
+    <div class="translation-card" *ngFor="let translation of savedTranslations; let i = index">
+      <div class="translation-content">
+        <div class="text-pair">
+          <div class="source-text">{{ translation.sourceText }}</div>
+          <div class="translated-text">{{ translation.translatedText }}</div>
+        </div>
+        <div class="translation-meta">
+          <span class="languages">
+            {{ translation.sourceLanguage }} → {{ translation.targetLanguage }}
+          </span>
+          <span class="timestamp">{{ formatDate(translation.timestamp) }}</span>
+        </div>
+      </div>
+      <button class="delete-btn" (click)="deleteTranslation(i)">×</button>
+    </div>
+  </div>
+
+  <ng-template #noTranslations>
+    <div class="no-translations">
+      <p>No saved translations yet.</p>
+    </div>
+  </ng-template>
+</div>

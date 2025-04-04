@@ -1,0 +1,68 @@
+<div class="translation-container">
+  <h1>Translation App</h1>
+  
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="language-selectors">
+    <div class="language-selector">
+      <label for="sourceLanguage">From:</label>
+      <select 
+        id="sourceLanguage" 
+        [(ngModel)]="sourceLanguage"
+        [disabled]="isLoading"
+      >
+        <option value="de">German</option>
+        <option *ngFor="let lang of supportedLanguages" [value]="lang.code">
+          {{ lang.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="language-selector">
+      <label for="targetLanguage">To:</label>
+      <select 
+        id="targetLanguage" 
+        [(ngModel)]="targetLanguage"
+        [disabled]="isLoading"
+      >
+        <option value="en">English</option>
+        <option *ngFor="let lang of supportedLanguages" [value]="lang.code">
+          {{ lang.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="translation-boxes">
+    <div class="text-box">
+      <textarea
+        [(ngModel)]="sourceText"
+        (ngModelChange)="onTextChange($event)"
+        placeholder="Enter German text to translate..."
+      ></textarea>
+    </div>
+
+    <div class="text-box">
+      <textarea
+        [(ngModel)]="translatedText"
+        placeholder="Translation will appear here..."
+        readonly
+      ></textarea>
+      <div class="loading-spinner" *ngIf="isLoading">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button 
+      class="save-btn" 
+      (click)="saveTranslation()"
+      [disabled]="!sourceText.trim() || !translatedText.trim() || isLoading"
+    >
+      Save Translation
+    </button>
+  </div>
+</div>
