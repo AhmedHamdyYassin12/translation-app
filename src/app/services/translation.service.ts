@@ -20,7 +20,9 @@ interface Language {
   providedIn: 'root'
 })
 export class TranslationService {
-  private apiUrl = '/api/v2/translate';
+  private apiUrl = environment.production 
+    ? 'https://api-free.deepl.com/v2/translate'  // Production URL
+    : '/api/v2/translate';  // Development URL with proxy
 
   constructor(private http: HttpClient) { }
 
