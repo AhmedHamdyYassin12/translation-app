@@ -17,20 +17,33 @@ build-website:
     - npm install --legacy-peer-deps
     - ls -la
     - npm run build
+    - echo "Build completed, checking output:"
+    - ls -la dist/translation-app/
   artifacts:
     paths:
       - dist/translation-app/
+    expire_in: 1 week
 
 test-website:
   image: alpine
   stage: test
+  needs:
+    - build-website
+  dependencies:
+    - build-website
   script:
     - echo "Start Testing"
+    - ls -la dist/translation-app/
     - test -f dist/translation-app/index.html
+    - echo "Testing completed successfully"
 
 netlify-deploy-prod:
   image: node:22-alpine
   stage: deploy
+  needs:
+    - test-website
+  dependencies:
+    - build-website
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   when: manual
@@ -41,4 +54,5 @@ netlify-deploy-prod:
     - netlify --version
     - netlify status
     - echo "Deploying to site id:${NETLIFY_SITE_ID}"
+    - ls -la dist/translation-app/
     - netlify deploy --prod --dir dist/translation-app
